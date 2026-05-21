@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:tizen="http://tizen.org/ns/widgets"
+        id="http://seagonia.hotel/TVLauncher"
+        version="1.0.0"
+        viewmodes="fullscreen">
+
+    <tizen:application id="SeagoniaTV.Launcher"
+                       package="SeagoniaTV"
+                       required_version="2.3"/>
+
+    <content src="tv.html"/>
+
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+
+    <access origin="*" subdomains="true"/>
+
+    <tizen:setting screen-orientation="landscape"
+                   context-menu="disable"
+                   background-support="disable"
+                   encryption="disable"
+                   install-location="auto"
+                   hwkey-event="enable"/>
+
+    <name>Seagonia Hotel</name>
+    <icon src="icon.png"/>
+</widget>

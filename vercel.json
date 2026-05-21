@@ -4,12 +4,16 @@
   ],
   "headers": [
     {
+      "source": "/(.*)\\.wgt",
+      "headers": [
+        { "key": "Content-Type", "value": "application/widget" },
+        { "key": "Content-Disposition", "value": "attachment; filename=\"SeagoniaLauncher.wgt\"" }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        }
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
       ]
     }
   ]

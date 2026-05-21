@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Seagonia Hotel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sea:     #1a3a4a;
+    --deep:    #0d2030;
+    --foam:    #e8f0ee;
+    --sand:    #c8b89a;
+    --white:   #f7f5f0;
+    --muted:   rgba(232,240,238,0.55);
+    --glass:   rgba(13,32,48,0.55);
+    --glass2:  rgba(13,32,48,0.82);
+    --accent:  #7ab8c8;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Jost', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 200;
+    background: var(--deep);
+    color: var(--white);
+    cursor: none;
+    user-select: none;
+  }
+
+  /* ── Hero bg ── */
+  .bg {
+    position: fixed; inset: 0;
+    background-image:
+      url('https://io.agop.pro/img/seagonia.jpg'),
+      linear-gradient(160deg, #0a2436 0%, #0d3347 20%, #1a5068 40%, #1e6b7a 55%, #2a8a7a 70%, #1a5a5a 85%, #0d2e3a 100%);
+    background-size: cover, cover;
+    background-position: center 30%, center;
+    transform: scale(1.04);
+    animation: bgDrift 30s ease-in-out infinite alternate;
+  }
+  .bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(13,32,48,0.45) 0%, rgba(13,32,48,0.15) 30%, rgba(13,32,48,0.55) 70%, rgba(13,32,48,0.92) 100%);
+  }
+  @keyframes bgDrift {
+    0%   { background-position: center 30%; }
+    100% { background-position: center 38%; }
+  }
+
+  /* ── Grain overlay ── */
+  .grain {
+    position: fixed; inset: 0;
+    opacity: 0.028;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    position: relative; z-index: 10;
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: 5vh 6vw;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 3.5vh;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: fadeUp 1.1s ease-out 0.2s forwards;
+  }
+
+  .eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: clamp(14px, 1.2vw, 18px);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2vh;
+  }
+
+  .hotel-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(60px, 7vw, 96px);
+    line-height: 0.9;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+  .hotel-name em {
+    font-style: italic;
+    color: var(--foam);
+    font-weight: 300;
+  }
+
+  .tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(18px, 1.8vw, 26px);
+    color: var(--muted);
+    margin-top: 1.6vh;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Channel grid ── */
+  .channels {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: fadeUp 1s ease-out 0.65s forwards;
+  }
+
+  .channels-label {
+    font-size: clamp(11px, 0.9vw, 14px);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2vh;
+    font-weight: 300;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(8px, 1vw, 14px);
+    margin-bottom: 2.5vh;
+  }
+  .grid.grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .section-divider {
+    font-size: clamp(10px, 0.8vw, 13px);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(122,184,200,0.5);
+    margin: 2vh 0 1.6vh;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(122,184,200,0.2);
+  }
+
+  /* ── Channel button ── */
+  .ch {
+    position: relative;
+    background: var(--glass);
+    border: 1px solid rgba(232,240,238,0.1);
+    border-radius: 4px;
+    padding: clamp(12px, 1.4vh, 20px) clamp(10px, 1vw, 16px);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s, background 0.2s, transform 0.18s, box-shadow 0.2s;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ch::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(122,184,200,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  /* Focus state for TV remote navigation */
+  .ch:focus,
+  .ch:hover {
+    outline: none;
+    border-color: rgba(122,184,200,0.75);
+    background: rgba(26,58,74,0.82);
+    transform: translateY(-2px) scale(1.015);
+    box-shadow: 0 0 0 2px rgba(122,184,200,0.35), 0 10px 28px rgba(0,0,0,0.45);
+  }
+  .ch:focus::before,
+  .ch:hover::before { opacity: 1; }
+
+  .ch:active { transform: translateY(0) scale(0.98); }
+
+  .ch-name {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: clamp(14px, 1.2vw, 20px);
+    color: var(--white);
+    letter-spacing: 0.06em;
+  }
+  .ch-type {
+    font-size: clamp(11px, 0.75vw, 14px);
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 200;
+    margin-top: 3px;
+  }
+
+  /* Featured (streaming) */
+  .ch.featured {
+    background: rgba(122,184,200,0.12);
+    border-color: rgba(122,184,200,0.3);
+  }
+  .ch.featured:focus,
+  .ch.featured:hover {
+    background: rgba(122,184,200,0.28);
+    border-color: rgba(122,184,200,0.75);
+  }
+
+  /* Live TV exit button */
+  .ch.exit-tv {
+    background: rgba(180,80,60,0.14);
+    border-color: rgba(210,110,90,0.35);
+  }
+  .ch.exit-tv:focus,
+  .ch.exit-tv:hover {
+    background: rgba(180,80,60,0.32);
+    border-color: rgba(210,130,110,0.8);
+    box-shadow: 0 0 0 2px rgba(210,110,90,0.35), 0 10px 28px rgba(0,0,0,0.45);
+  }
+  .ch.exit-tv .ch-name { color: #f4a99a; }
+
+  /* ── Welcome screen ── */
+  #welcome {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 0;
+    background: transparent;
+  }
+
+  .welcome-eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: clamp(13px, 1.1vw, 16px);
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.2s forwards;
+    margin-bottom: 3vh;
+  }
+
+  .welcome-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(80px, 11vw, 160px);
+    line-height: 0.88;
+    color: var(--white);
+    opacity: 0;
+    animation: fadeUp 0.9s ease-out 0.5s forwards;
+    letter-spacing: -0.015em;
+  }
+  .welcome-name em {
+    font-style: italic;
+    display: block;
+    color: var(--foam);
+    font-weight: 300;
+  }
+
+  .welcome-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(20px, 2.2vw, 32px);
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.9s forwards;
+    margin-top: 2.5vh;
+    letter-spacing: 0.06em;
+    font-weight: 300;
+  }
+
+  .welcome-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out 1.3s forwards;
+    margin: 3.5vh auto;
+  }
+
+  .welcome-hint {
+    font-family: 'Jost', sans-serif;
+    font-size: clamp(11px, 0.9vw, 14px);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(122,184,200,0.45);
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out 1.8s forwards;
+  }
+
+  /* ── Main TV grid ── */
+  #main { display: none; }
+  #main.visible { display: grid; }
+
+  /* ── Clock ── */
+  .clock {
+    position: fixed;
+    top: 4vh; right: 5vw;
+    z-index: 20;
+    text-align: right;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .clock-time {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 3vw, 52px);
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .clock-date {
+    font-family: 'Jost', sans-serif;
+    font-size: clamp(11px, 0.9vw, 14px);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+    font-weight: 200;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="grain"></div>
+
+<div class="clock" id="clock">
+  <div class="clock-time" id="ct">00:00</div>
+  <div class="clock-date" id="cd"></div>
+</div>
+
+<!-- ══════════ WELCOME SCREEN ══════════ -->
+<div id="welcome">
+  <div class="welcome-eyebrow">Paleros · Ionian Sea · Greece</div>
+  <div class="welcome-name">Seagonia<em>Hotel</em></div>
+  <div class="welcome-tagline">Your Retreat by the Sea</div>
+  <div class="welcome-line"></div>
+  <div class="welcome-hint">Press OK to continue</div>
+</div>
+
+<!-- ══════════ TV LAUNCHER ══════════ -->
+<div id="main">
+  <div class="shell">
+
+    <div class="header">
+      <div class="eyebrow">Paleros · Ionian Sea</div>
+      <div class="hotel-name">Seagonia<br><em>Hotel</em></div>
+      <div class="tagline">Your Retreat by the Sea</div>
+    </div>
+
+    <div class="channels">
+
+      <!-- Row 1: Greek channels + Live TV exit -->
+      <div class="grid grid-6">
+        <button class="ch exit-tv" id="first-btn" onclick="window.location.href='tv://'">
+          <div class="ch-name">Watch Live TV</div>
+          <div class="ch-type">Hotel channels</div>
+        </button>
+        <a class="ch featured" href="https://www.ertflix.gr">
+          <div class="ch-name">ERTflix</div>
+          <div class="ch-type">ERT1 · ERT2 · ERT3 · Sports</div>
+        </a>
+        <a class="ch" href="https://www.megatv.com/live/">
+          <div class="ch-name">Mega TV</div>
+          <div class="ch-type">Live · Entertainment</div>
+        </a>
+        <a class="ch" href="https://www.skai.gr/live">
+          <div class="ch-name">SKAI</div>
+          <div class="ch-type">News · Docs · Entertainment</div>
+        </a>
+        <a class="ch" href="https://www.alphatv.gr/live">
+          <div class="ch-name">Alpha TV</div>
+          <div class="ch-type">Entertainment · Series</div>
+        </a>
+        <a class="ch" href="https://www.star.gr/live">
+          <div class="ch-name">Star Channel</div>
+          <div class="ch-type">Movies · Series</div>
+        </a>
+      </div>
+
+      <div class="section-divider">International · Streaming</div>
+
+      <!-- Row 2: International news + Streaming -->
+      <div class="grid grid-6">
+        <a class="ch" href="https://edition.cnn.com/live-tv">
+          <div class="ch-name">CNN</div>
+          <div class="ch-type">24/7 World news</div>
+        </a>
+        <a class="ch" href="https://www.bbc.com/news/av/live">
+          <div class="ch-name">BBC News</div>
+          <div class="ch-type">UK · International</div>
+        </a>
+        <a class="ch" href="https://news.sky.com/watch-sky-news-live">
+          <div class="ch-name">Sky News</div>
+          <div class="ch-type">Breaking news · Live</div>
+        </a>
+        <a class="ch" href="https://www.euronews.com/live">
+          <div class="ch-name">Euronews</div>
+          <div class="ch-type">EU news · Multilingual</div>
+        </a>
+        <a class="ch featured" href="https://www.netflix.com">
+          <div class="ch-name">Netflix</div>
+          <div class="ch-type">Movies · Series · Docs</div>
+        </a>
+        <a class="ch featured" href="https://www.youtube.com">
+          <div class="ch-name">YouTube</div>
+          <div class="ch-type">Music · Docs · News</div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Clock ──
+  function updateClock() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('ct').textContent = hh + ':' + mm;
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('cd').textContent = days[now.getDay()] + ' · ' + now.getDate() + ' ' + months[now.getMonth()];
+  }
+  updateClock();
+  setInterval(updateClock, 10000);
+
+  // ── Welcome → main transition ──
+  var welcomeTimer;
+
+  function showMain() {
+    clearTimeout(welcomeTimer);
+    var w = document.getElementById('welcome');
+    var m = document.getElementById('main');
+    if (w.style.display === 'none') return;
+    w.style.transition = 'opacity 0.8s ease';
+    w.style.opacity = '0';
+    setTimeout(function() {
+      w.style.display = 'none';
+      m.classList.add('visible');
+      document.getElementById('clock').style.opacity = '1';
+      var items = document.querySelectorAll('.ch');
+      items.forEach(function(el, i) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(14px)';
+        el.style.transition = 'opacity 0.45s ease, transform 0.45s ease, border-color 0.2s, background 0.2s, box-shadow 0.2s';
+        setTimeout(function() {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 60 + i * 50);
+      });
+      // Focus first button for remote navigation
+      setTimeout(function() {
+        document.getElementById('first-btn').focus();
+      }, 60 + items.length * 50 + 100);
+    }, 800);
+  }
+
+  // Auto-advance after 4s
+  welcomeTimer = setTimeout(showMain, 4000);
+
+  // Press OK (Enter/Space) on welcome to skip
+  document.getElementById('welcome').addEventListener('keydown', function(e) {
+    if (e.keyCode === 13 || e.keyCode === 32) showMain();
+  });
+  document.getElementById('welcome').addEventListener('click', showMain);
+
+  // ── Samsung remote: register Back key (10009) ──
+  try {
+    tizen.tvinputdevice.registerKey('Back');
+  } catch(e) {}
+
+  document.addEventListener('keydown', function(e) {
+    var code = e.keyCode;
+
+    // Skip welcome on any key
+    if (document.getElementById('welcome').style.display !== 'none') {
+      showMain();
+      return;
+    }
+
+    // Samsung Back key — return to welcome screen
+    if (code === 10009 || code === 8) {
+      var focused = document.activeElement;
+      var isChannel = focused && focused.classList.contains('ch');
+      if (!isChannel) {
+        // Already at launcher root, do nothing
+      } else {
+        // Navigate back to launcher focus
+        document.getElementById('first-btn').focus();
+        e.preventDefault();
+      }
+    }
+  });
+</script>
+</body>
+</html>
