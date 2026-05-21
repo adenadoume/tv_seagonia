@@ -359,12 +359,59 @@
   @keyframes fadeIn {
     to { opacity: 1; }
   }
+
+  /* ── Debug panel (press 0 × 5 to open) ── */
+  #debug-panel {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,20,30,0.97);
+    padding: 4vh 5vw;
+    overflow-y: auto;
+    color: var(--white);
+    font-family: 'Jost', monospace;
+  }
+  #debug-panel h2 {
+    font-size: clamp(18px, 1.8vw, 26px);
+    font-weight: 300;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 2vh;
+  }
+  .debug-app {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .debug-app-name {
+    font-size: clamp(14px, 1.2vw, 18px);
+    font-weight: 300;
+  }
+  .debug-app-id {
+    font-size: clamp(11px, 0.85vw, 14px);
+    color: var(--accent);
+    opacity: 0.75;
+    margin-top: 2px;
+    word-break: break-all;
+  }
+  #debug-hint {
+    margin-top: 3vh;
+    font-size: clamp(11px, 0.9vw, 14px);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
 </style>
 </head>
 <body>
 
 <div class="bg"></div>
 <div class="grain"></div>
+
+<!-- Debug panel: press 0 × 5 to reveal installed app IDs -->
+<div id="debug-panel">
+  <h2>Installed Apps — Tizen App IDs</h2>
+  <div id="debug-list">Scanning…</div>
+  <div id="debug-hint">Press BACK to close</div>
+</div>
 
 <div class="clock" id="clock">
   <div class="clock-time" id="ct">00:00</div>
@@ -450,19 +497,19 @@
 
       <!-- Row 3: Native Samsung apps via tizen.application.launch -->
       <div class="grid" style="grid-template-columns: repeat(4, 1fr)">
-        <button class="ch featured" onclick="launchNativeApp('3201601007250')">
+        <button class="ch featured" onclick="launchApp('3201601007250', null)">
           <div class="ch-name">Samsung TV Plus</div>
           <div class="ch-type">Free live TV · News</div>
         </button>
-        <button class="ch featured" onclick="launchNativeApp('11101200001')">
+        <button class="ch featured" onclick="launchApp('11101200001', 'https://www.netflix.com')">
           <div class="ch-name">Netflix</div>
           <div class="ch-type">Movies · Series · Docs</div>
         </button>
-        <button class="ch featured" onclick="launchNativeApp('9Ur5ZgEvD7.YouTube')">
+        <button class="ch featured" onclick="launchApp('9Ur5ZgEvD7.YouTube', 'https://www.youtube.com')">
           <div class="ch-name">YouTube</div>
           <div class="ch-type">Music · Docs · News</div>
         </button>
-        <button class="ch featured" onclick="launchNativeApp('3201512006785')">
+        <button class="ch featured" onclick="launchApp('3201512006785', 'https://www.primevideo.com')">
           <div class="ch-name">Prime Video</div>
           <div class="ch-type">Amazon · Movies · Series</div>
         </button>
@@ -473,16 +520,57 @@
 </div>
 
 <script>
-  // ── Native Samsung Tizen app launcher ──
-  function launchNativeApp(appId) {
+  // ── App launcher: native first, web fallback ──
+  function launchApp(appId, fallbackUrl) {
     try {
       if (window.tizen && window.tizen.application) {
         tizen.application.launch(appId,
           function() {},
-          function(err) { alert('Could not open app: ' + err.message); }
+          function() { if (fallbackUrl) window.location.href = fallbackUrl; }
         );
+        return;
       }
     } catch(e) {}
+    if (fallbackUrl) window.location.href = fallbackUrl;
+  }
+
+  // ── Debug panel: press 0 × 5 within 3s to open ──
+  var _d0 = 0, _dt = null;
+  document.addEventListener('keydown', function(e) {
+    if (e.keyCode === 48) {
+      _d0++;
+      clearTimeout(_dt);
+      _dt = setTimeout(function() { _d0 = 0; }, 3000);
+      if (_d0 >= 5) { _d0 = 0; openDebugPanel(); }
+    }
+  });
+
+  function openDebugPanel() {
+    var panel = document.getElementById('debug-panel');
+    panel.style.display = 'block';
+    try {
+      tizen.application.getAppsInfo(function(apps) {
+        apps.sort(function(a, b) { return a.name.localeCompare(b.name); });
+        var html = '';
+        apps.forEach(function(app) {
+          html += '<div class="debug-app">'
+               + '<div class="debug-app-name">' + app.name + '</div>'
+               + '<div class="debug-app-id">' + app.id + '</div>'
+               + '</div>';
+        });
+        document.getElementById('debug-list').innerHTML =
+          '(' + apps.length + ' apps found)<br><br>' + html;
+      }, function(err) {
+        document.getElementById('debug-list').textContent = 'Error: ' + err.message;
+      });
+    } catch(e) {
+      document.getElementById('debug-list').textContent =
+        'Run on the TV — Tizen API not available here.';
+    }
+  }
+
+  function closeDebugPanel() {
+    document.getElementById('debug-panel').style.display = 'none';
   }
 
   // ── Clock ──
@@ -552,14 +640,15 @@
       return;
     }
 
-    // Samsung Back key — return to welcome screen
+    // Samsung Back key — close debug panel or return focus to first button
     if (code === 10009 || code === 8) {
+      if (document.getElementById('debug-panel').style.display === 'block') {
+        closeDebugPanel();
+        e.preventDefault();
+        return;
+      }
       var focused = document.activeElement;
-      var isChannel = focused && focused.classList.contains('ch');
-      if (!isChannel) {
-        // Already at launcher root, do nothing
-      } else {
-        // Navigate back to launcher focus
+      if (focused && focused.classList.contains('ch')) {
         document.getElementById('first-btn').focus();
         e.preventDefault();
       }
