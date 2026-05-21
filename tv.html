@@ -241,6 +241,16 @@
   }
   .ch.exit-tv .ch-name { color: #f4a99a; }
 
+  /* Reset <button> defaults so button.ch looks identical to a.ch */
+  button.ch {
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    text-align: left;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+
   /* ── Welcome screen ── */
   #welcome {
     position: fixed; inset: 0; z-index: 50;
@@ -382,11 +392,11 @@
 
     <div class="channels">
 
-      <!-- Row 1: Greek channels + Live TV exit -->
+      <!-- Row 1: Hotel TV + Greek channels -->
       <div class="grid grid-6">
         <button class="ch exit-tv" id="first-btn" onclick="window.location.href='tv://'">
-          <div class="ch-name">Watch Live TV</div>
-          <div class="ch-type">Hotel channels</div>
+          <div class="ch-name">Hotel TV</div>
+          <div class="ch-type">Cable · Antenna channels</div>
         </button>
         <a class="ch featured" href="https://www.ertflix.gr">
           <div class="ch-name">ERTflix</div>
@@ -410,10 +420,10 @@
         </a>
       </div>
 
-      <div class="section-divider">International · Streaming</div>
+      <div class="section-divider">International News</div>
 
-      <!-- Row 2: International news + Streaming -->
-      <div class="grid grid-6">
+      <!-- Row 2: International news -->
+      <div class="grid" style="grid-template-columns: repeat(5, 1fr)">
         <a class="ch" href="https://edition.cnn.com/live-tv">
           <div class="ch-name">CNN</div>
           <div class="ch-type">24/7 World news</div>
@@ -430,14 +440,32 @@
           <div class="ch-name">Euronews</div>
           <div class="ch-type">EU news · Multilingual</div>
         </a>
-        <a class="ch featured" href="https://www.netflix.com">
+        <a class="ch" href="https://www.france24.com/en/live">
+          <div class="ch-name">France 24</div>
+          <div class="ch-type">International</div>
+        </a>
+      </div>
+
+      <div class="section-divider">Streaming Apps</div>
+
+      <!-- Row 3: Native Samsung apps via tizen.application.launch -->
+      <div class="grid" style="grid-template-columns: repeat(4, 1fr)">
+        <button class="ch featured" onclick="launchNativeApp('3201601007250')">
+          <div class="ch-name">Samsung TV Plus</div>
+          <div class="ch-type">Free live TV · News</div>
+        </button>
+        <button class="ch featured" onclick="launchNativeApp('11101200001')">
           <div class="ch-name">Netflix</div>
           <div class="ch-type">Movies · Series · Docs</div>
-        </a>
-        <a class="ch featured" href="https://www.youtube.com">
+        </button>
+        <button class="ch featured" onclick="launchNativeApp('9Ur5ZgEvD7.YouTube')">
           <div class="ch-name">YouTube</div>
           <div class="ch-type">Music · Docs · News</div>
-        </a>
+        </button>
+        <button class="ch featured" onclick="launchNativeApp('3201512006785')">
+          <div class="ch-name">Prime Video</div>
+          <div class="ch-type">Amazon · Movies · Series</div>
+        </button>
       </div>
 
     </div>
@@ -445,6 +473,18 @@
 </div>
 
 <script>
+  // ── Native Samsung Tizen app launcher ──
+  function launchNativeApp(appId) {
+    try {
+      if (window.tizen && window.tizen.application) {
+        tizen.application.launch(appId,
+          function() {},
+          function(err) { alert('Could not open app: ' + err.message); }
+        );
+      }
+    } catch(e) {}
+  }
+
   // ── Clock ──
   function updateClock() {
     const now = new Date();
